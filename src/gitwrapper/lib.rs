@@ -20,7 +20,7 @@ pub mod config {
     pub fn set_priv_key(priv_key: &PathBuf) -> io::Result<()> {
         fs::create_dir_all(get_config_dir())?;
         let priv_key_path = fs::canonicalize(priv_key)?;
-        println!("Creating file with this key: {:?}", priv_key_path);
+        println!("Configuring gitwrapper with this key: {:?}", priv_key_path);
         fs::write(get_config_file(), priv_key_path.display().to_string())?;
         Ok(())
     }
@@ -28,12 +28,13 @@ pub mod config {
 
 #[cfg(test)]
 mod tests {
-    use std::path::PathBuf;
+    use std::{path::PathBuf, fs};
     use super::config::*;
 
     #[test]
     fn create_config() {
-        set_priv_key(&PathBuf::from("/bin/sh".to_string())).expect("Error on creating config file");
-        assert_eq!(read_stored_priv_key(), "/bin/sh");
+        let canonicalized_file = fs::canonicalize(&PathBuf::from("/bin/sh".to_string())).expect("Error canonicalizing path.");
+        set_priv_key(&canonicalized_file).expect("Error on creating config file");
+        assert_eq!(read_stored_priv_key(), canonicalized_file.display().to_string());
     }
 }
