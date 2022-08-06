@@ -9,6 +9,10 @@ edition = "2021"
 name = "gitwrapper"
 path = "src/gitwrapper/gitwrapper.rs"
 
+[[bin]]
+name = "gitwrapper-ssh"
+path = "src/gitwrapper/gitwrapper-ssh.rs"
+
 [dependencies]
 clap = { version = "3.2.16", features = ["derive"] }
 dirs = "4.0.0"
