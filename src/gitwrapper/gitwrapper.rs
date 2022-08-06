@@ -1,6 +1,7 @@
 use std::{io, fs, path::PathBuf, process::{Command, ExitStatus}};
 use clap::{Parser, Subcommand};
 mod lib;
+use lib::config::*;
 
 /// A git wrapper to use your own personal private ssh key
 #[derive(Parser, Debug)]
@@ -23,6 +24,12 @@ enum CliCommands {
         #[clap(multiple=true, allow_hyphen_values = true)]
         git_args: Vec<String>,
     },
+
+    /// View configured private ssh key
+    View { },
+
+    // Clear configured key
+    Clear { },
 }
 
 fn main() {
@@ -32,20 +39,28 @@ fn main() {
             set_priv_key(&priv_key).expect("Invalid priv key");
         },
         CliCommands::Git { git_args } => {
+            let asd = read_stored_priv_key();
+            println!("filee: '{}'", asd);
+
+            if read_stored_priv_key().is_empty() {
+                panic!("Config file shouldn't be empty.");
+            }
             if let Err(e) = call_git_command(&git_args) {
                 println!("Couldn't execute git command: {}", e)
+            }
+        },
+        CliCommands::View {  } => {
+            println!("{}", read_stored_priv_key());
+        },
+        CliCommands::Clear {  } => {
+            match fs::remove_file(get_config_file()) {
+                Ok(()) => println!("Sucessfully removed {:?}", get_config_file()),
+                Err(e) => println!("Couldn't remove config file. {}", e),
             }
         },
     }
 }
 
-fn set_priv_key(priv_key: &PathBuf) -> Result<(), io::Error> {
-    fs::create_dir_all(lib::config::get_config_dir())?;
-    let priv_key_path = fs::canonicalize(priv_key)?;
-    println!("Creating file with this key: {:?}", priv_key_path);
-    fs::write(lib::config::get_config_file(), priv_key_path.display().to_string())?;
-    Ok(())
-}
 
 fn call_git_command(args: &Vec<String>) -> io::Result<ExitStatus> {
     Command::new("git").env("GIT_SSH", "gitwrapper-ssh").args(args).spawn()?.wait()
