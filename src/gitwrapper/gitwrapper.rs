@@ -37,31 +37,29 @@ fn main() {
     match args.command {
         CliCommands::Set { priv_key } => {
             set_priv_key(&priv_key).expect("Invalid priv key");
+            println!("Config file successfully created.");
         },
         CliCommands::Git { git_args } => {
-            let asd = read_stored_priv_key();
-            println!("filee: '{}'", asd);
-
-            if read_stored_priv_key().is_empty() {
-                panic!("Config file shouldn't be empty.");
-            }
+            let config_yaml: ConfigYaml = get_config_yaml();
+            assert!(!config_yaml.priv_key.is_empty(), "Private key in config is empty, please use Set subcommand to configure a key.");
             if let Err(e) = call_git_command(&git_args) {
                 println!("Couldn't execute git command: {}", e)
             }
         },
         CliCommands::View {  } => {
-            println!("{}", read_stored_priv_key());
+            let config_yaml = get_config_yaml();
+            println!("Configured settings:\nPrivate key path: {}\nWrapped ssh binary: {}", config_yaml.priv_key, config_yaml.ssh_bin);
         },
         CliCommands::Clear {  } => {
             match fs::remove_file(get_config_file()) {
-                Ok(()) => println!("Sucessfully removed {:?}", get_config_file()),
+                Ok(()) => println!("Successfully removed {:?}", get_config_file()),
                 Err(e) => println!("Couldn't remove config file. {}", e),
             }
         },
     }
 }
 
-
 fn call_git_command(args: &Vec<String>) -> io::Result<ExitStatus> {
-    Command::new("git").env("GIT_SSH", "gitwrapper-ssh").args(args).spawn()?.wait()
+    let config_yaml = get_config_yaml();
+    Command::new("git").env("GIT_SSH", config_yaml.ssh_bin).args(args).spawn()?.wait()
 }

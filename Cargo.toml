@@ -6,13 +6,15 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [[bin]]
-name = "gitwrapper"
+name = "laingit"
 path = "src/gitwrapper/gitwrapper.rs"
 
 [[bin]]
-name = "gitwrapper-ssh"
+name = "lainssh"
 path = "src/gitwrapper/gitwrapper-ssh.rs"
 
 [dependencies]
 clap = { version = "3.2.16", features = ["derive"] }
 dirs = "4.0.0"
+serde = { version = "1.0.142", features = ["derive"] }
+serde_yaml = "0.9.4"
