@@ -7,11 +7,11 @@ edition = "2021"
 
 [[bin]]
 name = "laingit"
-path = "src/gitwrapper/gitwrapper.rs"
+path = "src/gitwrapper/laingit.rs"
 
 [[bin]]
 name = "lainssh"
-path = "src/gitwrapper/gitwrapper-ssh.rs"
+path = "src/gitwrapper/lainssh.rs"
 
 [dependencies]
 clap = { version = "3.2.16", features = ["derive"] }

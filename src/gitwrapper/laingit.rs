@@ -6,7 +6,6 @@ use lib::config::*;
 /// A git wrapper to use your own personal private ssh key
 #[derive(Parser, Debug)]
 struct Cli {
-    /// Private ssh key
     #[clap(subcommand)]
     command: CliCommands,
 }
@@ -28,15 +27,22 @@ enum CliCommands {
     /// View configured private ssh key
     View { },
 
-    // Clear configured key
+    /// Clear configured key
     Clear { },
+
+    /// Set other name for the ssh command
+    /// This is only if you rename the lainssh binary
+    SetCustomSsh {
+        /// Custom binary name for lainssh
+        ssh_bin: String,
+    },
 }
 
 fn main() {
     let args = Cli::parse();
     match args.command {
         CliCommands::Set { priv_key } => {
-            set_priv_key(&priv_key).expect("Invalid priv key");
+            save_config(Some(&priv_key), None).expect("Invalid priv key");
             println!("Config file successfully created.");
         },
         CliCommands::Git { git_args } => {
@@ -56,6 +62,10 @@ fn main() {
                 Err(e) => println!("Couldn't remove config file. {}", e),
             }
         },
+        CliCommands::SetCustomSsh { ssh_bin } => {
+            save_config(None, Some(ssh_bin)).unwrap();
+            println!("Custom ssh binary name successfully saved.");
+        }
     }
 }
 

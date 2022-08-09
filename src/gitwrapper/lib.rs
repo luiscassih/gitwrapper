@@ -40,10 +40,15 @@ pub mod config {
     pub fn get_config_file() -> PathBuf { get_config_dir().join("gitwrapper.config") }
 
     #[allow(dead_code)]
-    pub fn set_priv_key(priv_key: &PathBuf) -> io::Result<()> {
-        let priv_key_path = fs::canonicalize(priv_key)?;
+    pub fn save_config(priv_key: Option<&PathBuf>, ssh_bin: Option<String>) -> io::Result<()> {
         let mut config_yaml = get_config_yaml();
-        config_yaml.priv_key = priv_key_path.display().to_string();
+        if let Some(p) = priv_key {
+            let priv_key_path = fs::canonicalize(p)?;
+            config_yaml.priv_key = priv_key_path.display().to_string();
+        }
+        if let Some(s) = ssh_bin {
+            config_yaml.ssh_bin = s;
+        }
         fs::write(get_config_file(),serde_yaml::to_string(&config_yaml).unwrap())?;
         Ok(())
     }
@@ -57,7 +62,7 @@ mod tests {
     #[test]
     fn create_config() {
         let canonicalized_file = fs::canonicalize(&PathBuf::from("/bin/sh".to_string())).expect("Error canonicalizing path.");
-        set_priv_key(&canonicalized_file).expect("Error on creating config file");
+        save_config(Some(&canonicalized_file), None).expect("Error on creating config file");
         assert_eq!(get_config_yaml().priv_key, canonicalized_file.display().to_string());
     }
 }
