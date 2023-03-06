@@ -1,9 +1,9 @@
-# lainapps
+# GitWrapper
 Personal repo of CLI apps written in Rust
 
-`cargo run --bin laingit set ../a/path/to/your/private/ssh-key`
+`cargo run --bin gitwrapper set ../a/path/to/your/private/ssh-key`
 
-`cargo run --bin lainssh git <your-git-command>`
+`cargo run --bin gitwrapper-ssh git <your-git-command>`
 
 ## How to install
 - Clone this repo
@@ -12,10 +12,10 @@ Personal repo of CLI apps written in Rust
 
 if you want to replace your git for the entire session of your terminal, you can do 
 
-`alias git=laingit`
+`alias git=gitwrapper git`
 
 ## Example commands
-- `laingit set ../.ssh/my-personal-private-key`
+- `gitwrapper set ../.ssh/my-personal-private-key`
 
-- `laingit git clone git@...my-personal-project.git`
+- `gitwrapper git clone git@...my-personal-project.git`
 
